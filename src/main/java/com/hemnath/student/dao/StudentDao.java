@@ -31,6 +31,50 @@ public class StudentDao {
         return 0;
     }
 
+    public int saveStudent(Student student) throws SQLException {
+
+        String query = "INSERT INTO students (name, age, class, email ) VALUES (?, ?, ?, ?)";
+
+        try {
+            if (!validateStudent(student.getEmail())) {
+                PreparedStatement statement = connection.prepareStatement(query);
+                statement.setString(1, student.getName());
+                statement.setInt(2, student.getAge());
+                statement.setString(3, student.getCls());
+                statement.setString(4, student.getEmail());
+
+                return statement.executeUpdate(); // returns number of rows affected
+            } else {
+                return 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Rethrow the exception to be handled by the calling method
+        }
+    }
+
+    public int updateStudent(Student student) throws SQLException {
+        String sql = "UPDATE students SET name = ?, age = ? ,class = ?,email = ? WHERE id = ?";
+        try {
+            if(validateStudent(student.getEmail())) {
+                System.out.println("Check");
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setString(1, student.getName());
+                stmt.setInt(2, student.getAge());
+                stmt.setString(3,student.getCls());
+                stmt.setString(4,student.getEmail());
+                stmt.setInt(5,student.getId());
+                return stmt.executeUpdate();
+            }else {
+                return 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     public Student findById(int id) {
         try {
             String query = "SELECT * FROM students WHERE id = ?";
@@ -74,5 +118,17 @@ public class StudentDao {
             System.out.println(exception.getMessage());
         }
         return null;
+    }
+
+    public boolean validateStudent(String email) {
+        try {
+            String query = "SELECT * FROM students WHERE email = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -44,4 +44,32 @@ public class StudentService {
         }
 
     }
+
+    public Response<Student> insertStudent(Student student) {
+        try {
+            int result = studentDao.saveStudent(student);
+            if (result == 1) {
+                return new Response<>(200, "Successfully Inserted", null);
+            } else {
+                return new Response<>(400, "Already existed", null);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Response<Student> editStudent(Student student) {
+        try {
+            System.out.println(student + "Inside upda");
+            int result = studentDao.updateStudent(student);
+            if (result == 1) {
+                return new Response<>(200, "Successfully Updated", null);
+            } else {
+                return new Response<>(400, "Not existed", null);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
